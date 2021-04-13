@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form id="button_change" action="/change_user" method="post"></form>
+<form id="button_delete" action="/delete_user" method="post"></form>
+<form class="form-inline my-2 my-lg-0 justify-content-md-center">
+    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search"
+           id="search">
+    <button class="btn btn-outline-success my-2 my-sm-3" type="submit" formmethod="post" formaction="/">Поиск</button>
+    <button type="submit" class="my-2 my-md-3 btn-primary btn" formmethod="get" formaction="/users">Добавить</button>
+</form>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">id</th>
+        <th scope="col">UID</th>
+        <th scope="col">Фамилия</th>
+        <th scope="col">Имя</th>
+        <th scope="col">Отчество</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in rows %}
+    <tr>
+        <td>{{loop.index}}</td>
+        <td>
+            {{i.uid}}
+        </td>
+        <td>
+            {{i.last_name}}
+        </td>
+        <td>
+            {{i.first_name}}
+        </td>
+        <td>
+            {{i.middle_name}}
+        </td>
+        <td>
+            <button type="submit" class="btn btn-danger" name="delete_button" form="button_delete" value="{{i._id}}">
+                Удалить
+            </button>
+            <button type="submit" class="btn btn-primary" name="change_button" form="button_change" value="{{i._id}}">
+                Изменить
+            </button>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

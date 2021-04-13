@@ -1,0 +1,47 @@
+version: '3'
+services:
+  flask:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    container_name: flask
+    restart: unless-stopped
+    environment:
+      APP_ENV: "prod"
+      APP_DEBUG: "False"
+      APP_PORT: 5000
+      MONGODB_DATABASE: flaskdb
+      MONGODB_USERNAME: admin
+      MONGODB_PASSWORD: admin
+      MONGODB_HOSTNAME: mongodb
+    volumes:
+    - type: bind
+      source: ./server/
+      target: /server/
+    ports:
+    - 80:5000
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:4.4.4
+    container_name: mongodb
+    restart: unless-stopped
+    command: mongod --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: flaskdb
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+    - mongodbdata:/data/db
+
+  grcp:
+    build:
+      context: grpc
+      dockerfile: Dockerfile
+    container_name: grpc
+
+volumes:
+  mongodbdata:

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand navbar-dark bg-dark ">
+     <div class="collapse navbar-collapse justify-content-center">
+    <a class="navbar-brand " href="/">СКУД</a></div>
+    {% if 'username' in session %}
+    <form id="button_logout" action="/logout" method="post">
+    <div class="justify-content-md-end"><button type="submit" class="btn btn-danger" name="logout_button" form="button_logout">Выйти</button></div></form>
+        {% endif %}
+</nav>
+{% block content %}
+
+{% endblock %}
+</body>
+</html>
