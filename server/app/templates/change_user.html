@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+
 <div class="container" style="padding-top: 60px;">
     <h1 class="page-header">Профиль</h1>
     <div class="row">
         <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="text-center">
-                <img src="http://lorempixel.com/200/200/people/9/" class="avatar img-circle img-thumbnail"
+                <img src="" class="avatar img-circle img-thumbnail"
                      alt="avatar">
                 <h6>Добавить фото</h6>
                 <input type="file" class="text-center center-block well well-sm">
@@ -49,12 +51,16 @@
                             <label class="col-lg-3 control-label">Роль:</label>
                             <div class="col-lg-8">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="role" value="1"
+                                    {% set admin = "1" %}
+                                    <input class="form-check-input" type="radio" name="role" value="1" {% if i.role== admin
+                                           %} checked {% endif %}
                                            onclick="var input = document.getElementById('password');if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}">
                                     <label class="form-check-label">Админ</label>
                                 </div>
+                                {% set user = "2" %}
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="role" value="2"
+                                    <input class="form-check-input" type="radio" name="role" value="2" {% if i.role== user
+                                           %} checked {% endif %}
                                            onclick="var input = document.getElementById('password');if(this.checked){ input.disabled = true;;}else{input.disabled=false;}">
                                     <label class="form-check-label">Пользователь</label>
                                 </div>

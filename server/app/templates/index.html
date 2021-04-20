@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section>
+    <div class="container">
 <form id="button_change" action="/change_user" method="post"></form>
 <form id="button_delete" action="/delete_user" method="post"></form>
 <form class="form-inline my-2 my-lg-0 justify-content-md-center">
@@ -12,29 +14,24 @@
 <table class="table">
     <thead>
     <tr>
-        <th scope="col">id</th>
-        <th scope="col">UID</th>
-        <th scope="col">Фамилия</th>
-        <th scope="col">Имя</th>
-        <th scope="col">Отчество</th>
+        <th>id</th>
+        <th>UID</th>
+        <th>Фамилия</th>
+        <th>Имя</th>
+        <th>Отчество</th>
+        <th>Зоны</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
     {% for i in rows %}
     <tr>
         <td>{{loop.index}}</td>
-        <td>
-            {{i.uid}}
-        </td>
-        <td>
-            {{i.last_name}}
-        </td>
-        <td>
-            {{i.first_name}}
-        </td>
-        <td>
-            {{i.middle_name}}
-        </td>
+        <td>{{i.uid}}</td>
+        <td>{{i.last_name}}</td>
+        <td>{{i.first_name}}</td>
+        <td>{{i.middle_name}}</td>
+        <td>{% for j in i.zone %} {{j}} {% endfor%}</td>
         <td>
             <button type="submit" class="btn btn-danger" name="delete_button" form="button_delete" value="{{i._id}}">
                 Удалить
@@ -48,4 +45,5 @@
     </tbody>
 </table>
 </div>
+</section>
 {% endblock %}

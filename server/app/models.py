@@ -1,3 +1,32 @@
+from bson import ObjectId
+from . import manager, users
+
+class User():
+    def __init__(self, login):
+        self.login = login
+
+    @staticmethod
+    def is_authenticated():
+        return True
+
+    @staticmethod
+    def is_active():
+        return True
+
+    @staticmethod
+    def is_anonymous():
+        return False
+
+    def get_id(self):
+        return self.login
+
+    @manager.user_loader
+    def load_user(login):
+        u = users.find_one({"last_name": login})
+        if not u:
+            return None
+        return User(login=u['last_name'])
+
 
 def insert_document(collection, data):
     return collection.insert_one(data).inserted_id
@@ -20,3 +49,4 @@ def update_document(collection, query_elements, new_values_one):
 
 def delete_document(collection, query):
     collection.delete_one(query)
+
