@@ -15,27 +15,30 @@ services:
       MONGODB_PASSWORD: admin
       MONGODB_HOSTNAME: mongodb
     volumes:
-    - type: bind
-      source: ./server/
-      target: /server/
+      - type: bind
+        source: ./server/
+        target: /server/
     ports:
-    - 80:5000
+      - 80:5000
     depends_on:
       - mongodb
 
   mongodb:
     image: mongo:4.4.4
     container_name: mongodb
-    restart: unless-stopped
-    command: mongod --auth
+    restart: always
+    expose:
+      - 27017
+    ports:
+      - 27017:27017
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
       MONGO_INITDB_DATABASE: flaskdb
+      MONGO_REPLICA_SET_NAME: rs
       MONGODB_DATA_DIR: /data/db
       MONDODB_LOG_DIR: /dev/null
     volumes:
-    - mongodbdata:/data/db
+      - mongodbdata:/data/db
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs" ]
 
   grcp:
     build:
