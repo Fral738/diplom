@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form id="button_recover" action="/recovery" method="post"></form>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">id</th>
+        <th scope="col">UID</th>
+        <th scope="col">Фамилия</th>
+        <th scope="col">Имя</th>
+        <th scope="col">Отчество</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in rows %}
+    <tr>
+        <td>{{loop.index}}</td>
+        <td>
+            {{i.uid}}
+        </td>
+        <td>
+            {{i.last_name}}
+        </td>
+        <td>
+            {{i.first_name}}
+        </td>
+        <td>
+            {{i.middle_name}}
+        </td>
+        <td>
+            <button type="submit" class="btn btn-primary" name="recovery_button" form="button_recover" value="{{i._id}}">
+                Восстановить
+            </button>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
