@@ -1,22 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center align-items-center" style="height:100vh">
+
+<div class="row justify-content-center align-items-center" style="height:70vh">
         <div class="col-4">
             <div class="card">
                 <div class="card-body">
                     <h1>
                         <center>Вход</center>
                     </h1>
+                    <br></br>
                     <form method="post" action="/login" autocomplete="off">
                         <div class="form-group">
-                            <label for="username">Имя пользователя:</label>
-                            <input id="username" type="text" class="form-control" name="username" required>
+                            <div class="input-group">
+                                <span class="input-group-text fa fa-user"></span>
+                                <input id="username" type="text" class="form-control" name="username"
+                                       placeholder="Логин" required>
+                            </div>
                         </div>
+                        <br></br>
                         <div class="form-group">
-                            <label for="password">Пароль:</label>
-                            <input id="password" type="password" class="form-control" name="password" required>
+                            <div class="input-group"><span class="input-group-text fa fa-lock"></span>
+                            <input id="password" type="password" class="form-control" name="password"
+                                   placeholder="Пароль" required>
                         </div>
+                        </div>
+                        <br></br>
                         <center>
                             <button type="submit" class="btn-primary btn-lg">Войти</button>
                         </center>
@@ -26,4 +34,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

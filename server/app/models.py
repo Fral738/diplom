@@ -50,3 +50,4 @@ def update_document(collection, query_elements, new_values_one):
 def delete_document(collection, query):
     collection.delete_one(query)
 
+

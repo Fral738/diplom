@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,31 +9,39 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
             crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 </head>
 <body>
+<form id="button_logout" action="/logout" method="post"></form>
+<nav class="navbar navbar-expand-lg  navbar-dark bg-dark ">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse justify-content-between">
+            {% if current_user.is_authenticated %}
+            <div class="d-flex justify-content-start">
+                <div class="dropdown">
+                    <button class="btn btn-dark dropdown-toggle fa fa-bars" type="button" id="menu" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                        <ul class="dropdown-menu" aria-labelledby="menu">
+                            <li><a class="dropdown-item fa fa-id-card" href="/users">&nbsp;&nbsp;Добавить пользователя</a></li>
+                            <li><a class="dropdown-item fa fa-server" href="/device">&nbsp;&nbsp;Добавить устройство</a></li>
+                            <li><a class="dropdown-item fa fa-recycle" href="/recovery">&nbsp;&nbsp;Восстановление пользователя</a></li>
+                            <li><a class="dropdown-item fa fa-eye" href="/device_monitoring">&nbsp;&nbsp;Мониторинг устройств</a></li>
+                            <li><a class="dropdown-item fa fa-eye" href="/logs">&nbsp;&nbsp;Посмотреть логи</a></li>
 
-<nav class="navbar navbar-expand navbar-dark bg-dark ">
-    <div class="container fluid">
-        {% if current_user.is_authenticated %}
-        <form id="button_logs" action="/logs" method="get"></form>
-        <form id="button_recovery" action="/recovery" method="get"></form>
-        <div class="collapse navbar-collapse ms-auto">
-            <button type="submit" class="btn btn-primary" name="logs_button" form="button_logs">Логи</button>
+                        </ul>
+                </div>
+            </div>
+            {% endif %}
+            <div class="d-flex mx-auto">
+                <a class="navbar-brand" href="/">СКУД</a>
+            </div>
+            {% if current_user.is_authenticated %}
+            <div class="d-flex md-8 ">
+                <button type="submit" class="btn btn-danger" name="logout_button" form="button_logout">Выйти</button>
+            </div>
+            {% endif %}
         </div>
-        <div class="collapse navbar-collapse ms-auto">
-            <button type="submit" class="btn btn-primary" name="recovery_button" form="button_recovery">Восстановление
-            </button>
-        </div>
-        {% endif %}
-        <div class="collapse navbar-collapse justify-content-center">
-            <a class="navbar-brand " href="/">СКУД</a></div>
-        {% if current_user.is_authenticated %}
-        <form id="button_logout" action="/logout" method="post"></form>
-        <div class="collapse navbar-collapse me-auto">
-            <button type="submit" class="btn btn-danger" name="logout_button" form="button_logout">Выйти</button>
-        </div>
-        {% endif %}
     </div>
 </nav>
 {% block content %}
