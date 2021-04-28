@@ -1,38 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
-
-<div class="row justify-content-center align-items-center" style="height:70vh">
-        <div class="col-4">
-            <div class="card">
-                <div class="card-body">
-                    <h1>
-                        <center>Вход</center>
-                    </h1>
-                    <br></br>
-                    <form method="post" action="/login" autocomplete="off">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <span class="input-group-text fa fa-user"></span>
-                                <input id="username" type="text" class="form-control" name="username"
-                                       placeholder="Логин" required>
-                            </div>
+<div class="row justify-content-center align-items-center" style="padding-top: 180px">
+    <div class="col-md-4">
+        <div class="card text-center border-dark">
+            <div class="w-100 p-3">
+            <div class="card-body">
+                <h1>
+                    <center>Вход</center>
+                </h1>
+                <br></br>
+                <form method="post" action="/login" autocomplete="off">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-text fa fa-user"></span>
+                            <input id="username" type="text" class="form-control" name="username"
+                                   placeholder="Логин" required>
                         </div>
-                        <br></br>
-                        <div class="form-group">
-                            <div class="input-group"><span class="input-group-text fa fa-lock"></span>
+                    </div>
+                    <br></br>
+                    <div class="form-group">
+                        <div class="input-group"><span class="input-group-text fa fa-lock"></span>
                             <input id="password" type="password" class="form-control" name="password"
                                    placeholder="Пароль" required>
                         </div>
-                        </div>
-                        <br></br>
-                        <center>
-                            <button type="submit" class="btn-primary btn-lg">Войти</button>
-                        </center>
-                    </form>
-                </div>
+                    </div>
+                    <br></br>
+                    <center>
+                        <button type="submit" class="btn-primary btn-lg">Войти</button>
+                    </center>
+                </form>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 {% endblock %}

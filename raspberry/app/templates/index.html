@@ -2,14 +2,10 @@
 
 {% block content %}
 <form id="button_delete" action="/delete_user" method="post"></form>
-<form id="button_upload" action="/send_document" method="get"></form>
 <div class="container">
     <div class="row">
-        <div class="col-md-1 me-4 ">
-            <button class="btn btn-danger fa fa-trash " type="submit" form="button_delete" name="delete_button" >&nbsp;Удалить</button>
-        </div>
-        <div class="col-md-3 ">
-            <button class="btn btn-primary fa fa-upload" type="submit" form="button_upload" name="upload_button">&nbsp;Загрузить</button>
+        <div class="col-md-4 self-align-start">
+            <button class="btn btn-danger fa fa-trash" type="submit" form="button_delete" name="delete_button">&nbsp;Удалить</button>
         </div>
         <div class="col-md-4 self-align-center">
             <input type="search" id="search"  class="form-control" placeholder="Поиск">
@@ -26,7 +22,6 @@
                     <th>Фамилия</th>
                     <th>Имя</th>
                     <th>Отчество</th>
-                    <th>Зоны</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -38,7 +33,6 @@
                     <td onclick="document.location='/change_user/{{i._id}}';">{{i.last_name}}</td>
                     <td onclick="document.location='/change_user/{{i._id}}';">{{i.first_name}}</td>
                     <td onclick="document.location='/change_user/{{i._id}}';">{{i.middle_name}}</td>
-                    <td onclick="document.location='/change_user/{{i._id}}';">{% for j in i.zone %} {{j}} {% endfor%}</td>
                 </tr>
                 {% endfor %}
                 </tbody>

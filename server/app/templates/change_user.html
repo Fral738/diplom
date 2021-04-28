@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-{% set male, female = "Male", "Female" %}
-
+{% set male, female, zone1, zone2, zone3, zone4  = "Male", "Female", "1", "2", "3", "4" %}
 <div class="container">
     <div class="row justify-content-center align-items-center" style="padding-top: 40px">
         <div class="card text-center border-dark w-50">
@@ -73,21 +72,21 @@
                                     aria-expanded="true">
                                 Список зон
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <li class="dropdown-input"><label></label><input type="checkbox"
-                                                                                 id="checkAll"> Выбрать
+                            <ul class="dropdown-menu form-group options" aria-labelledby="dropdownMenuButton">
+                                <li  class="dropdown-input"><label><input type="checkbox"
+                                                                                 id="checkAll" required> Выбрать
                                     все</label></li>
-                                <li class="dropdown-input"><label></label><input type="checkbox"
-                                                                                 name="checkbox" value="1">
+                                <li class="dropdown-input"><label><input type="checkbox"
+                                                                                 name="checkbox" value="1" {% if zone1 in i.zone %} checked {% endif %} required>
                                     Зона №1</label></li>
-                                <li class="dropdown-input"><label></label><input type="checkbox"
-                                                                                 name="checkbox" value="2">
+                                <li class="dropdown-input"><label><input type="checkbox"
+                                                                                 name="checkbox" value="2" {% if zone2 in i.zone %} checked {% endif %} required>
                                     Зона №2</label></li>
-                                <li class="dropdown-input"><label></label><input type="checkbox"
-                                                                                 name="checkbox" value="2">
+                                <li class="dropdown-input"><label><input type="checkbox"
+                                                                                 name="checkbox" value="3" {% if zone3 in i.zone %} checked {% endif %} required>
                                     Зона №3</label></li>
-                                <li class="dropdown-input"><label></label><input type="checkbox"
-                                                                                 name="checkbox" value="2">
+                                <li class="dropdown-input"><label><input type="checkbox"
+                                                                                 name="checkbox" value="4"{% if zone4 in i.zone %} checked {% endif %} required>
                                     Зона №4</label></li>
                             </ul>
                         </div>
@@ -129,4 +128,16 @@ document.getElementById('check').style.display = 'block';
 
 </script>
 
+<script>
+    $(function(){
+    var requiredCheckboxes = $('.options :checkbox[required]');
+    requiredCheckboxes.change(function(){
+        if(requiredCheckboxes.is(':checked')) {
+            requiredCheckboxes.removeAttr('required');
+        } else {
+            requiredCheckboxes.attr('required', 'required');
+        }
+    });
+});
+</script>
 {% endblock %}

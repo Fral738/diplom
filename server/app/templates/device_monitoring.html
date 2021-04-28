@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set work, notwork = 'Работает', 'Не работает' %}
+<form id="button_upload" action="/send_document" method="get"></form>
+<form id="button_delete" action="/device_delete" method="post"></form>
+<div class="container">
+     <div class="row">
+        <div class="col-md-4 self-align-start">
+            <button class="btn btn-danger fa fa-trash" type="submit" form="button_delete" name="delete_button">&nbsp;Удалить</button>
+        </div>
+           <div class="col-md-4 self-align-center">
+            <input type="search" id="search" class="form-control" placeholder="Поиск">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table">
+                <thead>
+                <tr>
+                    <td><input type="checkbox" id="checkAll"></td>
+                    <th>id</th>
+                    <th>Название</th>
+                    <th>IP</th>
+                    <th>Зоны</th>
+                    <th>Статус</th>
+                    <th>Время работы</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="searchable">
+                {% for i in row %}
+                <tr
+                        {% for key, value in state.items() %}
+                        {% if key== i.ip and value== work %}
+                        bgcolor="#8fd8be"
+                        {% elif key== i.ip and value== notwork %}
+                        bgcolor="#ff6666"
+                        {% endif %}
+                        {% endfor %}
+                >   <td style="flex: 0;"><input type="checkbox" name="delete_checkbox" id="checkbox" form="button_delete" value="{{i._id}}">
+                    <td onclick="document.location='/change_device/{{i._id}}';">{{loop.index}}</td>
+                    <td onclick="document.location='/change_device/{{i._id}}';">{{i.name}}</td>
+                    <td onclick="document.location='/change_device/{{i._id}}';">{{i.ip}}</td>
+                    <td onclick="document.location='/change_device/{{i._id}}';">{{i.zone}}</td>
+                    <td onclick="document.location='/change_device/{{i._id}}';">{% for key, value in state.items() %}
+                        {% if key == i.ip %}
+                        {{value}}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td onclick="document.location='/change_device/{{i._id}}';">{% for key, value in timer.items() %}
+                        {% if key == i.ip %}
+                        {{value}}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td onclick="document.location='/change_device/{{i._id}}';"><button class="btn btn-danger fa fa-upload" type="submit" form="" name="">&nbsp;Удалить</button></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script>
+  $(document).ready(function(){
+  $("#search").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#searchable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+
+$("#checkAll").click(function () {
+     $('input:checkbox').not(this).prop('checked', this.checked);
+ });
+
+</script>
+{% endblock %}

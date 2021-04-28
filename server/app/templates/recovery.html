@@ -27,7 +27,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for i in rows %}
+                {% for i in rows|reverse  %}
                 <tr>
                     <td><input type="checkbox" name="recovery_checkbox" id="checkbox" form="button_recovery" value="{{i._id}}"></td>
                     <td>{{loop.index}}</td>
