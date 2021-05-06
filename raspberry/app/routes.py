@@ -13,14 +13,9 @@ def check():
     uid = request.json
     check = find_document(other_users, {'uid': uid["rfid"]}, False, True)
     if check:
-        insert_document(other_logs, {'last_name': check['last_name'], 'first_name': check['first_name'],
-                                     'middle_name': check['middle_name'], 'uid': check['uid'],
-                                     'entry_action': 'Разрешен',
-                                     'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
         return 'accept'
     else:
-        insert_document(other_logs, {'uid': uid['rfid'], 'entry_action': 'Отказан',
-                                     'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
+
         return 'decline'
 
 
@@ -89,13 +84,3 @@ def receive_delete():
         delete_document(other_users, {'_id': ObjectId(i)})
 
 
-@app.route('/send_log', methods=['POST'])
-def send_log():
-    if request.json == 'send_logs':
-        log = find_document(other_logs)
-        lst = []
-        for i in log:
-            lst.append({'last_name': i['last_name'], 'first_name': i['first_name'], 'middle_name': i['middle_name'],
-                        'uid': i['uid'], 'entry_action': i['entry_action']})
-        other_logs.drop()
-        return jsonify(lst)

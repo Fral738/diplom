@@ -3,3 +3,4 @@ pymongo==3.11.3
 Flask-PyMongo==2.3.0
 Flask-Login==0.5.0
 requests
+python-logstash-async

@@ -1,6 +1,6 @@
 import datetime
 
-from . import app, users, deleted_users, logs, devices, startup_time
+from . import app, users, deleted_users, devices, logger, startup_time
 from flask import render_template, request, redirect, url_for, jsonify
 from flask_login import login_required, login_user, logout_user
 from .models import find_document, insert_document, update_document, delete_document, User
@@ -64,19 +64,26 @@ def add_user():
                    'password': generate_password_hash(request.form['password']),
                    'zone': request.form.getlist('checkbox'), 'role': request.form['role']}
             insert_document(users, one)
+            logger.info("user added",
+                        extra={'last_name': request.form['last_name'], 'first_name': request.form['first_name'],
+                               'middle_name': request.form['middle_name'],
+                               'uid': request.form['uid'],
+                               'zone': request.form.getlist('checkbox'),
+                               })
         else:
             one = {'last_name': request.form['last_name'], 'first_name': request.form['first_name'],
                    'middle_name': request.form['middle_name'], 'gender': request.form['gender'],
                    'uid': request.form['uid'],
                    'zone': request.form.getlist('checkbox'),
                    'role': request.form['role']}
+            logger.info("user added",
+                        extra={'last_name': request.form['last_name'], 'first_name': request.form['first_name'],
+                               'middle_name': request.form['middle_name'],
+                               'uid': request.form['uid'],
+                               'zone': request.form.getlist('checkbox'),
+                               })
             insert_document(users, one)
-        insert_document(logs, {'last_name': request.form['last_name'], 'first_name': request.form['first_name'],
-                               'middle_name': request.form['middle_name'], 'gender': request.form['gender'],
-                               'uid': request.form['uid'], 'zone': request.form.getlist('checkbox'),
-                               'role': request.form['role'],
-                               'action': 'Добавлен',
-                               'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
+
     return redirect('/')
 
 
@@ -93,10 +100,6 @@ def add_device():
     if request.method == 'POST':
         insert_document(devices, {'name': request.form['device_name'], 'ip': request.form['ip'],
                                   'port': request.form['port'], 'zone': request.form['zone']})
-        insert_document(logs, {'device_name': request.form['device_name'], 'ip': request.form['ip'],
-                               'port': request.form['port'], 'zone': request.form['zone'],
-                               'action': 'Добавлен',
-                               'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
         return redirect('/')
 
 
@@ -112,11 +115,6 @@ def device_change():
     if request.method == 'POST':
         update_document(devices, {'name': request.form['device_name'], 'ip': request.form['ip'],
                                   'port': request.form['port'], 'zone': request.form['zone']})
-        insert_document(logs, {'device_name': request.form['device_name'], 'ip': request.form['ip'],
-                               'port': request.form['port'], 'zone': request.form['zone'],
-                               'action': 'Изменен',
-                               'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
-
 
 @app.route('/device_delete', methods=['POST'])
 @login_required
@@ -125,10 +123,6 @@ def device_delete():
         for line in request.form.getlist('delete_checkbox'):
             cash = find_document(devices, {'_id': ObjectId(line)}, False, True)
             delete_document(devices, {'_id': ObjectId(line)})
-            insert_document(logs, {'device_name': cash['name'], 'ip': cash['ip'],
-                                   'port': cash['port'], 'zone': cash['zone'],
-                                   'action': 'Удален',
-                                   'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
         return redirect('/device_monitoring')
 
 
@@ -157,6 +151,10 @@ def change():
                              'uid': request.form['uid'],
                              'role': request.form['role'], 'zone': request.form.getlist('checkbox'),
                              'password': generate_password_hash(request.form['password'])})
+            logger.info("user changed", extra={'last_name': request.form['last_name'],
+                                               'first_name': request.form['first_name'],
+                                               'middle_name': request.form['middle_name'],
+                                               'zone': request.form.getlist('checkbox')})
         else:
             update_document(users, {'_id': ObjectId(request.form['button_for_change'])},
                             {'last_name': request.form['last_name'],
@@ -164,14 +162,10 @@ def change():
                              'middle_name': request.form['middle_name'], 'uid': request.form['uid'],
                              'gender': request.form['gender'],
                              'role': request.form['role'], 'zone': request.form.getlist('checkbox')})
-
-    insert_document(logs,
-                    {'last_name': request.form['last_name'],
-                     'first_name': request.form['first_name'],
-                     'middle_name': request.form['middle_name'], 'uid': request.form['uid'],
-                     'role': request.form['role'], 'zone': request.form.getlist('checkbox'),
-                     'action': 'Изменен',
-                     'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
+            logger.info("user changed", extra={'last_name': request.form['last_name'],
+                                               'first_name': request.form['first_name'],
+                                               'middle_name': request.form['middle_name'],
+                                               'zone': request.form.getlist('checkbox')})
     for i in send_device:
         for key, value in i.items():
             if key == 'ip':
@@ -194,7 +188,8 @@ def change():
                 post = requests.post(head + ip + ":" + port + '/get_documents', json=lst)
                 post = requests.post(head + ip + ":" + port + '/receive_change', json=lst)
             else:
-                post = requests.post(head + ip + ":" + port + '/receive_delete', json=[request.form['button_for_change']])
+                post = requests.post(head + ip + ":" + port + '/receive_delete',
+                                     json=[request.form['button_for_change']])
 
     return redirect('/')
 
@@ -208,11 +203,9 @@ def delete_user():
     if request.method == 'POST':
         for line in request.form.getlist('delete_checkbox'):
             cash = find_document(users, {'_id': ObjectId(line)}, False, True)
+            logger.info("user deleted", extra={'last_name': cash['last_name'], 'first_name': cash['last_name'],
+                                               'middle_name': cash['middle_name'], 'uid': cash['uid'], 'zone': cash['zone']})
             delete_document(users, {'_id': ObjectId(line)})
-            insert_document(logs, {'last_name': cash['last_name'], 'first_name': cash['first_name'],
-                                   'middle_name': cash['middle_name'], 'uid': cash['uid'], 'role': cash['role'],
-                                   'action': 'Удален',
-                                   'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
             insert_document(deleted_users, cash)
         hosts = find_document(devices)
         for i in hosts:
@@ -233,52 +226,17 @@ def delete_user():
         return redirect('/')
 
 
-@app.route('/logs', methods=['GET', 'POST'])
-@login_required
-def logs_view():
-    if request.method == 'GET':
-        row = find_document(logs)
-        return render_template('logs.html', rows=row)
-
-
-@app.route('/receive_logs', methods=['GET'])
-@login_required
-def receive_logs():
-    ip = ""
-    head = "http://"
-    destination = "/response_check"
-    hosts = find_document(devices)
-    for i in hosts:
-        for key, value in i.items():
-            if key == 'ip':
-                ip = value
-            if key == 'port':
-                port = value
-            try:
-                response = requests.get(head + ip + ':' + port + destination, timeout=0.01)
-            except HTTPError:
-                pass
-            except Exception:
-                pass
-            else:
-                log = requests.post(head + ip + ':' + port + '/send_log', json='send_logs')
-                for i in log.json():
-                    insert_document(logs, i)
-                return redirect('/logs')
-
-
 @app.route('/check', methods=['POST'])
 def check():
     uid = request.json
     check = find_document(users, {'uid': uid["rfid"]}, False, True)
     if check:
-        insert_document(logs, {'last_name': check['last_name'], 'first_name': check['first_name'],
-                               'middle_name': check['middle_name'], 'uid': check['uid'], 'entry_action': 'Разрешен',
-                               'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
+        logger.info('successful entry', extra={'last_name': check['last_name'], 'first_name': check['last_name'],
+                                               'middle_name': check['middle_name'], 'uid': check['uid'],
+                                               'zone': check['zone']})
         return 'accept'
     else:
-        insert_document(logs, {'uid': uid['rfid'], 'entry_action': 'Отказан',
-                               'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
+        logger.warning('suspicious actions', extra={'uid': check['uid']})
         return 'decline'
 
 
@@ -304,11 +262,8 @@ def recovery_user():
         for line in request.form.getlist('recovery_checkbox'):
             result = find_document(deleted_users, {'_id': ObjectId(line)}, False, True)
             insert_document(users, result)
-            insert_document(logs, {'last_name': result['last_name'],
-                                   'first_name': result['first_name'],
-                                   'middle_name': result['middle_name'], 'role': result['role'], 'zone': result['zone'],
-                                   'action': 'Восстановлен',
-                                   'date': '{:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now())})
+            logger.info("user recovered", extra={'last_name': result['last_name'], 'first_name': result['first_name'],
+                                                 'middle_name': result['middle_name'], 'uid': result['uid'], 'zone': result['zone']})
             delete_document(deleted_users, result)
         return redirect('/send_document')
 

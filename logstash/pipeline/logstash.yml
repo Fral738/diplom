@@ -1,0 +1,14 @@
+input {
+    tcp {
+        port => 5000
+        codec => json
+    }
+}output {
+    elasticsearch {
+        hosts => "https://elastic:9200"
+        user => "logstash"
+        password => "logstash"
+        ssl => false
+        ssl_certificate_verification => false
+        }
+}

@@ -1,5 +1,15 @@
 version: '3'
 services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+    - 443:443
+    volumes:
+    - ./nginx/conf.d/:/etc/nginx/conf.d
+    networks:
+      - elk
+
   flask:
     build:
       context: server
@@ -22,6 +32,8 @@ services:
       - 80:5000
     depends_on:
       - mongodb
+    networks:
+      - elk
 
   raspberry:
     build:
@@ -45,6 +57,8 @@ services:
       - 8080:5000
     depends_on:
       - mongodb
+    networks:
+      - elk
 
   mongodb:
     image: mongo:4.4.4
@@ -56,14 +70,55 @@ services:
       MONDODB_LOG_DIR: /dev/null
     volumes:
       - mongodbdata:/data/db
+    networks:
+      - elk
 
-  grcp:
-    build:
-      context: grpc
-      dockerfile: Dockerfile
-    container_name: grpc
+  elastic:
+    image: amazon/opendistro-for-elasticsearch:1.13.2
+    container_name: elastic
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9600:9600 # required for Performance Analyzer
+    networks:
+      - elk
+  kibana:
+    image: amazon/opendistro-for-elasticsearch-kibana:1.13.2
+    container_name: kibana
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+      ELASTICSEARCH_URL: https://elastic:9200
+      ELASTICSEARCH_HOSTS: https://elastic:9200
+    networks:
+      - elk
 
+  logstash:
+    image: docker.elastic.co/logstash/logstash-oss:$ELK_VERSION
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - 5000:5000
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    depends_on:
+      - elastic
+    networks:
+      - elk
 
+networks:
+  elk:
+    driver: bridge
 
 volumes:
+  elastic-data:
+    driver: local
   mongodbdata:
+
+
