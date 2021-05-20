@@ -1,5 +1,17 @@
 from bson import ObjectId
 from . import manager, users
+import socket
+
+
+def check_status(host, port, timeout):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as ex:
+        print(ex)
+        return False
+
 
 class User():
     def __init__(self, login):

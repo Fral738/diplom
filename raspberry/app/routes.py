@@ -15,7 +15,6 @@ def check():
     if check:
         return 'accept'
     else:
-
         return 'decline'
 
 

@@ -9,7 +9,8 @@ services:
     - ./nginx/conf.d/:/etc/nginx/conf.d
     networks:
       - elk
-
+    depends_on:
+      - flask
   flask:
     build:
       context: server
@@ -100,7 +101,7 @@ services:
       - elk
 
   logstash:
-    image: docker.elastic.co/logstash/logstash-oss:$ELK_VERSION
+    image: docker.elastic.co/logstash/logstash-oss:7.10.2
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
     ports:

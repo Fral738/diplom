@@ -3,7 +3,7 @@ import datetime
 from . import app, users, deleted_users, devices, logger, startup_time
 from flask import render_template, request, redirect, url_for, jsonify
 from flask_login import login_required, login_user, logout_user
-from .models import find_document, insert_document, update_document, delete_document, User
+from .models import find_document, insert_document, update_document, delete_document, User, check_status
 from werkzeug.security import check_password_hash, generate_password_hash
 from bson import ObjectId
 from requests.exceptions import HTTPError
@@ -39,11 +39,7 @@ def login():
                     for i in password_list:
                         if check_password_hash(i, password):
                             login_user(User(login=login))
-                            next_page = request.args.get('next')
-                            if next_page is None:
-                                return redirect(url_for('index'))
-                            else:
-                                return redirect(next_page)
+                            return redirect(url_for('index'))
     return render_template('login.html', error=error)
 
 
@@ -100,7 +96,7 @@ def add_device():
     if request.method == 'POST':
         insert_document(devices, {'name': request.form['device_name'], 'ip': request.form['ip'],
                                   'port': request.form['port'], 'zone': request.form['zone']})
-        return redirect('/')
+        return redirect('/device_monitoring')
 
 
 @app.route('/change_device/<searchable>', methods=['GET'])
@@ -115,6 +111,7 @@ def device_change():
     if request.method == 'POST':
         update_document(devices, {'name': request.form['device_name'], 'ip': request.form['ip'],
                                   'port': request.form['port'], 'zone': request.form['zone']})
+
 
 @app.route('/device_delete', methods=['POST'])
 @login_required
@@ -214,13 +211,7 @@ def delete_user():
                     ip = value
                 if key == 'port':
                     port = value
-                try:
-                    response = requests.get(head + ip + ':' + port + destination, timeout=0.01)
-                except HTTPError:
-                    pass
-                except Exception:
-                    pass
-                else:
+                if check_status(ip, int(port), 3):
                     post = requests.post(head + ip + ":" + port + '/receive_delete',
                                          json=request.form.getlist('delete_checkbox'))
         return redirect('/')
@@ -283,7 +274,7 @@ def device_monitoring():
             if key == 'port':
                 port = value
             try:
-                response = requests.get(head + ip + ':' + port + destination, timeout=0.01)
+                response = requests.get(head + ip + ':' + port + destination, timeout=3)
             except HTTPError:
                 status[ip] = 'Не работает'
                 timer[ip] = '0:00:00'
@@ -319,13 +310,7 @@ def send_document():
                 port = value
             if key == 'zone':
                 zone = value
-        try:
-            requests.get(head + ip + ":" + port + destination, timeout=0.01)
-        except HTTPError:
-            pass
-        except Exception:
-            pass
-        else:
+        if check_status(ip, int(port), 3):
             for j in send_user:
                 for k, v in j.items():
                     if k == 'zone':
@@ -340,8 +325,9 @@ def send_document():
     return redirect('/')
 
 
-@app.after_request
-def redirect_singin(response):
-    if response.status_code == 401:
-        return redirect(url_for('login') + '?next=' + request.url)
-    return response
+@app.before_request
+def before_request():
+    if request.environ.get('HTTPS') == 'off':
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
