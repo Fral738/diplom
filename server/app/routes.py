@@ -172,7 +172,7 @@ def change():
             if key == 'zone':
                 zone = value
         try:
-            requests.get(head + ip + ":" + port + destination, timeout=0.01)
+            requests.get(head + ip + ":" + port + destination, timeout=0.5)
         except HTTPError:
             pass
         except Exception:
@@ -194,6 +194,7 @@ def change():
 @app.route('/delete_user', methods=['POST'])
 @login_required
 def delete_user():
+    port = 0
     ip = ""
     head = "http://"
     destination = "/response_check"
@@ -210,25 +211,24 @@ def delete_user():
                 if key == 'ip':
                     ip = value
                 if key == 'port':
-                    port = value
-                if check_status(ip, int(port), 3):
-                    post = requests.post(head + ip + ":" + port + '/receive_delete',
+                    port = int(value)
+                if check_status(ip, port, 0.5):
+                    post = requests.post(head + ip + ':' + str(port) + '/receive_delete',
                                          json=request.form.getlist('delete_checkbox'))
         return redirect('/')
 
 
-@app.route('/check', methods=['POST'])
-def check():
-    uid = request.json
-    check = find_document(users, {'uid': uid["rfid"]}, False, True)
-    if check:
-        logger.info('successful entry', extra={'last_name': check['last_name'], 'first_name': check['last_name'],
-                                               'middle_name': check['middle_name'], 'uid': check['uid'],
-                                               'zone': check['zone']})
-        return 'accept'
+@app.route('/logs_receive', methods=['POST'])
+def logs_receive():
+    addr = find_document(devices, {'ip': request.remote_addr}, False, True)
+    log = request.json
+    log['zone'] = addr['zone']
+    if log['status'] == 'Доступ разрешен':
+        logger.info('accept', extra=log)
+        return 'ok'
     else:
-        logger.warning('suspicious actions', extra={'uid': check['uid']})
-        return 'decline'
+        logger.warning('denied', extra=log)
+        return 'ok'
 
 
 @app.route('/logout', methods=['POST'])
@@ -274,7 +274,7 @@ def device_monitoring():
             if key == 'port':
                 port = value
             try:
-                response = requests.get(head + ip + ':' + port + destination, timeout=3)
+                response = requests.get(head + ip + ':' + port + destination, timeout=0.5)
             except HTTPError:
                 status[ip] = 'Не работает'
                 timer[ip] = '0:00:00'
@@ -310,7 +310,7 @@ def send_document():
                 port = value
             if key == 'zone':
                 zone = value
-        if check_status(ip, int(port), 3):
+        if check_status(ip, int(port), 0.5):
             for j in send_user:
                 for k, v in j.items():
                     if k == 'zone':

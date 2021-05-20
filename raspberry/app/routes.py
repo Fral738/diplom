@@ -8,16 +8,6 @@ import requests
 import time
 
 
-@app.route('/check', methods=['POST'])
-def check():
-    uid = request.json
-    check = find_document(other_users, {'uid': uid["rfid"]}, False, True)
-    if check:
-        return 'accept'
-    else:
-        return 'decline'
-
-
 @app.route('/response_check', methods=['GET'])
 def response_check():
     if request.method == 'GET':

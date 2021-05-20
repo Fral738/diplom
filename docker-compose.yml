@@ -36,31 +36,6 @@ services:
     networks:
       - elk
 
-  raspberry:
-    build:
-      context: raspberry
-      dockerfile: Dockerfile
-    container_name: raspberry
-    restart: unless-stopped
-    environment:
-      APP_ENV: "prod"
-      APP_DEBUG: "False"
-      APP_PORT: 5000
-      MONGODB_DATABASE: flaskdb
-      MONGODB_USERNAME: admin
-      MONGODB_PASSWORD: admin
-      MONGODB_HOSTNAME: mongodb
-    volumes:
-      - type: bind
-        source: ./raspberry/
-        target: /raspberry/
-    ports:
-      - 8080:5000
-    depends_on:
-      - mongodb
-    networks:
-      - elk
-
   mongodb:
     image: mongo:4.4.4
     container_name: mongodb
@@ -97,6 +72,12 @@ services:
     environment:
       ELASTICSEARCH_URL: https://elastic:9200
       ELASTICSEARCH_HOSTS: https://elastic:9200
+      SERVER_SSL_ENABLED: "true"
+      SERVER_SSL_KEY: /usr/share/kibana/config/example.com+4-key.pem
+      SERVER_SSL_CERTIFICATE: /usr/share/kibana/config/example.com+4.pem
+    volumes:
+    - ./kibana/example.com+4-key.pem:/usr/share/kibana/config/example.com+4-key.pem
+    - ./kibana/example.com+4.pem://usr/share/kibana/config/example.com+4.pem
     networks:
       - elk
 
