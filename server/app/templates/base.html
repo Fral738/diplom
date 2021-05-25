@@ -14,7 +14,7 @@
 
 </head>
 <body>
-<form id="button_logout" action="/logout" method="post"></form>
+<form id="button_logout" action="{{url_for('logout', _external=True, _scheme='https')}}" method="post"></form>
 <nav class="navbar navbar-expand-lg  navbar-dark bg-dark ">
     <div class="container-fluid">
         <div class="collapse navbar-collapse justify-content-between">
@@ -27,13 +27,13 @@
                             <li><a class="dropdown-item fa fa-server" href="/device">&nbsp;&nbsp;Добавить устройство</a></li>
                             <li><a class="dropdown-item fa fa-recycle" href="/recovery">&nbsp;&nbsp;Восстановление пользователя</a></li>
                             <li><a class="dropdown-item fa fa-eye" href="/device_monitoring">&nbsp;&nbsp;Мониторинг устройств</a></li>
-                            <li><a class="dropdown-item fa fa-eye" target="_blank" rel="noopener noreferrer" href="http://192.168.0.233:5601">&nbsp;&nbsp;Посмотреть логи</a></li>
+                            <li><a class="dropdown-item fa fa-eye" target="_blank" rel="noopener noreferrer" href="https://192.168.1.8:5601">&nbsp;&nbsp;Посмотреть логи</a></li>
                         </ul>
                 </div>
             </div>
             {% endif %}
             <div class="d-flex mx-auto">
-                <a class="navbar-brand" href="/">СКУД</a>
+                <a class="navbar-brand" href="{{url_for('index', _external=True, _scheme='https')}}">СКУД</a>
             </div>
             {% if current_user.is_authenticated %}
             <div class="d-flex md-8 ">

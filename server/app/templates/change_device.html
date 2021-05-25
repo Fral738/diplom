@@ -7,7 +7,7 @@
                 <div class="card-body">
                     <h3 class="card-title">Добавление устройства</h3>
                     <br></br>
-                    <form method="post" action="/device_change" autocomplete="off">
+                    <form method="post" action="{{url_for('device_change', _external=True, _scheme='https')}}" autocomplete="off">
                         <div class="form-group">
                             <div class="input-group mb-4">
                                 <span class="input-group-text fa fa-wifi" style="width: 140px">&nbsp;IP : port</span>
@@ -33,7 +33,7 @@
                             </div>
                         </div>
                         <center>
-                            <button type="submit" class="btn-primary btn-lg">Изменить</button>
+                            <button type="submit" class="btn-primary btn-lg" name="button_change" value="{{i._id}}">Изменить</button>
                         </center>
                     </form>
                 </div>

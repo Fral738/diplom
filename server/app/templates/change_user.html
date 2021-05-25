@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 {% set male, female, zone1, zone2, zone3, zone4  = "Male", "Female", "1", "2", "3", "4" %}
+{% set admin, user = "1", "2" %}
 <div class="container">
     <div class="row justify-content-center align-items-center" style="padding-top: 40px">
         <div class="card text-center border-dark w-50">
             <div class="card-body">
                 <h3 class="card-title"> Карточка пользователя </h3>
                 <br></br>
-                <form method="post" action="/change" autocomplete="off">
+                <form method="post" action="{{url_for('change', _external=True, _scheme='https')}}" autocomplete="off">
                     <div class="form-group">
                         <div class="input-group mb-4">
                             <span class="input-group-text" style="width: 150px;">&nbsp;Фамилия</span>
@@ -50,8 +51,8 @@
                             <span class="input-group-text" style="width: 150px">&nbsp;Роль</span>
                             <select id="role" name="role" class="custom-select form-control" onchange="select_change()"
                                     required>
-                                <option value="1">Администратор</option>
-                                <option value="2" selected>Пользователь</option>
+                                <option value="1" {% if i.role == admin %} selected {% endif %}>Администратор</option>
+                                <option value="2" {% if i.role == user %} selected {% endif %}>Пользователь</option>
                             </select>
                         </div>
                     </div>

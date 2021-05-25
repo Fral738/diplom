@@ -9,7 +9,7 @@
                     <center>Авторизация</center>
                 </h1>
                 <br></br>
-                <form method="post" action="/login" autocomplete="off">
+                <form method="post" action="{{url_for('login', _external=True, _scheme='https')}}" autocomplete="off">
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-text fa fa-user"></span>

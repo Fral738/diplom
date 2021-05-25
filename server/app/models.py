@@ -34,10 +34,13 @@ class User():
 
     @manager.user_loader
     def load_user(login):
-        u = users.find_one({"last_name": login})
-        if not u:
-            return None
-        return User(login=u['last_name'])
+        if login == 'admin':
+            return User(login=login)
+        else:
+            u = users.find_one({"last_name": login})
+            if not u:
+                return None
+            return User(login=u['last_name'])
 
 
 def insert_document(collection, data):

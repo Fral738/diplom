@@ -39,7 +39,11 @@ def login():
                     for i in password_list:
                         if check_password_hash(i, password):
                             login_user(User(login=login))
-                            return redirect(url_for('index'))
+                            return redirect(url_for('index', _external=True, _scheme='https'))
+            elif not find_document(users, {'role': '1'}, True):
+                if (login and password) == 'admin':
+                    login_user(User(login=login))
+                    return redirect(url_for('index', _external=True, _scheme='https'))
     return render_template('login.html', error=error)
 
 
@@ -80,7 +84,7 @@ def add_user():
                                })
             insert_document(users, one)
 
-    return redirect('/')
+    return redirect(url_for('index', _external=True, _scheme='https'))
 
 
 @app.route('/device', methods=['GET'])
@@ -96,7 +100,7 @@ def add_device():
     if request.method == 'POST':
         insert_document(devices, {'name': request.form['device_name'], 'ip': request.form['ip'],
                                   'port': request.form['port'], 'zone': request.form['zone']})
-        return redirect('/device_monitoring')
+        return redirect(url_for('device_monitoring', _external=True, _scheme='https'))
 
 
 @app.route('/change_device/<searchable>', methods=['GET'])
@@ -109,8 +113,10 @@ def change_device(searchable):
 @login_required
 def device_change():
     if request.method == 'POST':
-        update_document(devices, {'name': request.form['device_name'], 'ip': request.form['ip'],
-                                  'port': request.form['port'], 'zone': request.form['zone']})
+        update_document(devices, {'_id': ObjectId(request.form['button_change'])},
+                        {'name': request.form['device_name'], 'ip': request.form['ip'],
+                         'port': request.form['port'], 'zone': request.form['zone']})
+        return redirect(url_for('device_monitoring', _external=True, _scheme='https'))
 
 
 @app.route('/device_delete', methods=['POST'])
@@ -120,7 +126,7 @@ def device_delete():
         for line in request.form.getlist('delete_checkbox'):
             cash = find_document(devices, {'_id': ObjectId(line)}, False, True)
             delete_document(devices, {'_id': ObjectId(line)})
-        return redirect('/device_monitoring')
+        return redirect(url_for('device_monitoring', _external=True, _scheme='https'))
 
 
 @app.route('/change_user/<searchable>', methods=['GET', 'POST'])
@@ -188,7 +194,7 @@ def change():
                 post = requests.post(head + ip + ":" + port + '/receive_delete',
                                      json=[request.form['button_for_change']])
 
-    return redirect('/')
+    return redirect(url_for('index', _external=True, _scheme='https'))
 
 
 @app.route('/delete_user', methods=['POST'])
@@ -202,7 +208,8 @@ def delete_user():
         for line in request.form.getlist('delete_checkbox'):
             cash = find_document(users, {'_id': ObjectId(line)}, False, True)
             logger.info("user deleted", extra={'last_name': cash['last_name'], 'first_name': cash['last_name'],
-                                               'middle_name': cash['middle_name'], 'uid': cash['uid'], 'zone': cash['zone']})
+                                               'middle_name': cash['middle_name'], 'uid': cash['uid'],
+                                               'zone': cash['zone']})
             delete_document(users, {'_id': ObjectId(line)})
             insert_document(deleted_users, cash)
         hosts = find_document(devices)
@@ -215,7 +222,7 @@ def delete_user():
                 if check_status(ip, port, 0.5):
                     post = requests.post(head + ip + ':' + str(port) + '/receive_delete',
                                          json=request.form.getlist('delete_checkbox'))
-        return redirect('/')
+        return redirect(url_for('index', _external=True, _scheme='https'))
 
 
 @app.route('/logs_receive', methods=['POST'])
@@ -236,7 +243,7 @@ def logs_receive():
 def logout():
     if request.method == 'POST':
         logout_user()
-        return redirect(url_for('login'))
+        return redirect(url_for('login', _external=True, _scheme='https'))
 
 
 @app.route('/recovery', methods=['GET'])
@@ -254,9 +261,10 @@ def recovery_user():
             result = find_document(deleted_users, {'_id': ObjectId(line)}, False, True)
             insert_document(users, result)
             logger.info("user recovered", extra={'last_name': result['last_name'], 'first_name': result['first_name'],
-                                                 'middle_name': result['middle_name'], 'uid': result['uid'], 'zone': result['zone']})
+                                                 'middle_name': result['middle_name'], 'uid': result['uid'],
+                                                 'zone': result['zone']})
             delete_document(deleted_users, result)
-        return redirect('/send_document')
+        return redirect(url_for('send_document', _external=True, _scheme='https'))
 
 
 @app.route('/device_monitoring', methods=['GET', 'POST'])
@@ -322,12 +330,19 @@ def send_document():
 
         post = requests.post('http://' + ip + ":" + port + '/get_documents', json=lst)
     lst = []
-    return redirect('/')
+    return redirect(url_for('index', _external=True, _scheme='https'))
+
+
+@app.after_request
+def redirect_to_signin(response):
+    if response.status_code == 401:
+        return redirect(url_for('login'))
+    return response
 
 
 @app.before_request
 def before_request():
-    if request.environ.get('HTTPS') == 'off':
+    if request.environ.get('https') == 'off':
         url = request.url.replace('http://', 'https://', 1)
         code = 301
         return redirect(url, code=code)

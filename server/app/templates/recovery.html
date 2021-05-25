@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form id="button_recovery" action="/recovery_user" method="post"></form>
+<form id="button_recovery" action="{{url_for('recovery_user', _external=True, _scheme='https')}}" method="post"></form>
 <div class="container">
     <div class="row">
         <div class="col-md-4 self-align-start">

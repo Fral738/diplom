@@ -2,8 +2,8 @@
 
 {% block content %}
 {% set work, notwork = 'Работает', 'Не работает' %}
-<form id="button_upload" action="/send_document" method="get"></form>
-<form id="button_delete" action="/device_delete" method="post"></form>
+<form id="button_upload" action="{{url_for('send_document', _external=True, _scheme='https')}}" method="get"></form>
+<form id="button_delete" action="{{url_for('device_delete', _external=True, _scheme='https')}}" method="post"></form>
 <div class="container">
      <div class="row">
         <div class="col-md-4 self-align-start">

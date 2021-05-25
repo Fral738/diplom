@@ -6,7 +6,7 @@
         <div class="card-body">
             <h3 class="card-title"> Карточка пользователя </h3>
             <br></br>
-            <form method="post" action="/add_user" autocomplete="off">
+            <form method="post" action="{{url_for('add_user', _external=True, _scheme='https')}}" autocomplete="off">
                 <div class="form-group">
                     <div class="input-group mb-4">
                         <span class="input-group-text" style="width: 150px;">&nbsp;Фамилия</span>
